@@ -1,0 +1,31 @@
+@page "/products"
+@inject IProductService productService;
+
+<PageTitle>Products</PageTitle>
+
+<ModuleTitle Title="Products" />
+
+@if (products?.Count > 0)
+{
+    <ProductList Products=products />
+}
+else
+{
+    <p><em>No Information to show</em></p>
+}
+
+@code
+{
+    private List<Product>? products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await GetProducts();
+    }
+    
+    private async Task<List<Product>> GetProducts()
+    {
+        return await productService.GetProducts();
+    }
+
+}
