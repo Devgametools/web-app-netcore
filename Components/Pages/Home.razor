@@ -10,10 +10,10 @@ Welcome to your new app.
 
 @code
 {
-    public string helloMessage = "";
+    public string? helloMessage { get; set; }
 
     protected override void OnInitialized()
     {
-        helloMessage = config["welcomeMessage"];
+        helloMessage = config["welcomeMessage"] ?? "Hello World, welcome to Devgametools";
     }
 }

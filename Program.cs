@@ -9,7 +9,12 @@ builder.Services.AddRazorComponents()
 
 var apiUrl = builder.Configuration.GetValue<string>("apiURL");
 
+if (string.IsNullOrEmpty(apiUrl))
+{
+    throw new ArgumentNullException(nameof(apiUrl), "La URL de la API no está configurada correctamente");
+}
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiUrl) });
+
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 
@@ -23,7 +28,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 
 app.UseAntiforgery();

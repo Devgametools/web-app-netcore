@@ -16,7 +16,7 @@ public class ProductService: IProductService
         this.options = new JsonSerializerOptions{ PropertyNameCaseInsensitive = true };
     }
     
-    public async Task<List<Product>?> GetProducts()
+    public async Task<List<Product>> Get()
     {
         var response = await client.GetAsync("products");
         var content = await response.Content.ReadAsStringAsync();
@@ -24,11 +24,18 @@ public class ProductService: IProductService
         {
             throw new ApplicationException(content);    
         }
-        return JsonSerializer.Deserialize<List<Product>>(content, options);
+            
+        var products = JsonSerializer.Deserialize<List<Product>>(content, options);
+        if (products == null)
+        {
+            throw new ApplicationException("Error deserializing the product list.");
+        }
+
+        return products;
         
     }
 
-    public async Task AddProduct(Product product)
+    public async Task Add(Product product)
     {
         var content = new StringContent(JsonSerializer.Serialize(product, options), 
         Encoding.UTF8, "application/json");
@@ -36,13 +43,13 @@ public class ProductService: IProductService
         await client.PostAsync("products", content);
     }
 
-    public async Task UpdateProduct(Product product)
+    public async Task Update(Product product)
     {
         var content = new StringContent(JsonSerializer.Serialize(product, options), Encoding.UTF8, "application/json");
         await client.PutAsync($"products/{product.Id}", content);
     }
 
-    public async Task DeleteProduct(int id)
+    public async Task Delete(int id)
     {
         await client.DeleteAsync($"products/{id}");
     }
@@ -51,8 +58,8 @@ public class ProductService: IProductService
 
 public interface IProductService
 {
-    Task<List<Product>?> GetProducts();
-    Task AddProduct(Product product);
-    Task UpdateProduct(Product product);
-    Task DeleteProduct(int id);
+    Task<List<Product>> Get();
+    Task Add(Product product);
+    Task Update(Product product);
+    Task Delete(int id);
 }
